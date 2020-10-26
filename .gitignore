@@ -1,0 +1,7 @@
+# JPEG
+*.jpg
+*.jpeg
+# BMP
+*.bmp
+# Portable Network Graphics
+*.png
