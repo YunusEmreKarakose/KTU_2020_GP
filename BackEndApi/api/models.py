@@ -15,3 +15,10 @@ class DetectSpecificFacesModel(models.Model):
     targetImage=models.ImageField(upload_to='images',null=True,blank=True)
     def __str__(self):
         return self.targetName
+#detect specific face and corrupt
+class DetectSFaceAndCorruptModel(models.Model):
+    corruptFactor=models.IntegerField(default=8,null=True)
+    image=models.ImageField(upload_to='images',null=True,blank=True)
+    targetImage=models.ImageField(upload_to='images',null=True,blank=True)
+    def __str__(self):
+        return self.targetName
