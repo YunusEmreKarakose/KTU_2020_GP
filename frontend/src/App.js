@@ -1,9 +1,9 @@
 import './App.css';
-import Form from './components/form'
+import FormSelector from './components/formSelector'
 function App() {
   return (
     <div className="App">
-      <Form />
+      <FormSelector/>
     </div>
   );
 }

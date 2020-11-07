@@ -1,13 +1,12 @@
 import React from 'react'
 import axios from 'axios'
 import ImageContainer from './imageContainer'
-class Form extends React.Component {
+class Form2 extends React.Component {
     constructor() {
         super()
         this.state = {
             image:null,
-            targetImage:null,
-            corruptFactor:null,
+            title:"",
             proccesed:null,
             isLoad:false
         }
@@ -29,9 +28,8 @@ class Form extends React.Component {
         e.preventDefault();
         const fd=new FormData();
         fd.append('image',this.state.image)
-        fd.append('targetImage',this.state.targetImage)
-        fd.append('corruptFactor',this.state.corruptFactor)
-        const url='http://localhost:8000/detectSFaceAndCorrupt/'
+        fd.append('title',this.state.title)
+        const url='http://localhost:8000/detectFaces/'
         axios.post(url,fd)
             .then((response)=>{
                 //console.log(response)
@@ -47,10 +45,9 @@ class Form extends React.Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.submitHandler}>
-                    <input type="file" name="image" onChange={this.handleChange}></input>
-                    <input type="file" name="targetImage" onChange={this.handleChange}></input>                    
-                    <input type="text" name="corruptFactor" onChange={this.handleChange}></input>
+                <form onSubmit={this.submitHandler} class="form1">
+                    <input type="file" name="image" onChange={this.handleChange}></input>                   
+                    <input type="text" name="title" onChange={this.handleChange}></input>
                     <button type="submit">Submit</button>
                 </form>
                 <div>
@@ -61,4 +58,4 @@ class Form extends React.Component {
     }
 }
 
-export default Form
+export default Form2

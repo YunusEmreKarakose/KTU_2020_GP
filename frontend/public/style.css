@@ -1,0 +1,26 @@
+
+body{
+	align-items: center;
+	color: #252c37;
+	font-family: 'Lato', sans-serif;
+	font-weight: 400;
+	-webkit-font-smoothing: antialiased;
+}
+/* FORM 1*/
+.form1{
+    padding-top: 100px;
+    align-items: center;
+    margin-left: auto; 
+    margin-right: auto;
+}
+
+/*image container*/
+.imgContainer{
+    padding-top: 100px;
+    border: 10px;
+}
+
+.imgContainer img{
+    width:100%;
+    max-width: 600px;
+}
