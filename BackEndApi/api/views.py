@@ -4,6 +4,7 @@ from rest_framework.parsers import MultiPartParser,FormParser
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import HttpResponse,FileResponse
+import base64
 #face recog and image proccess
 from api.imageprocces import ImageProccess
 #models
@@ -28,8 +29,11 @@ class DetectFacesViewSet(APIView):
             df_serializers.save()            
             proccesedImgPath=ImageProccess.detectFaces('./'+df_serializers.data['image'])
             #return proccesed img as response
-            pImg=open(proccesedImgPath,'rb')
-            return FileResponse(pImg)
+            pImg=open(proccesedImgPath,'rb')            
+            #file response for react
+            b64str=base64.b64encode(pImg.read())
+            return HttpResponse(b64str)
+            #return FileResponse(pImg)
             #return Response(df_serializers.data,status=status.HTTP_201_CREATED)
         else:
             return Response(df_serializers.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -49,7 +53,10 @@ class DSFViewSet(APIView):
             proccesedImgPath=ImageProccess.detectSpecificFace(imagePath,targetIFPath,targetName)
             #return proccesed img as response
             pImg=open(proccesedImgPath,'rb')
-            return FileResponse(pImg)
+            #file response for react
+            b64str=base64.b64encode(pImg.read())
+            return HttpResponse(b64str)
+            #return FileResponse(pImg)
             #return Response(dsf_serializers.data,status=status.HTTP_201_CREATED)
         else:
             return Response(dsf_serializers.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -68,7 +75,12 @@ class DSFACViewSet(APIView):
             proccesedImgPath=ImageProccess.detectSFaceAndCorrupt(imagePath,targetIFPath,corruptFactor)
             #return proccesed img as response
             pImg=open(proccesedImgPath,'rb')
-            return FileResponse(pImg)
-            #return Response(dsf_serializers.data,status=status.HTTP_201_CREATED)
+            #file response for react
+            b64str=base64.b64encode(pImg.read())
+            return HttpResponse(b64str)
+            #for postman
+            #return FileResponse(pImg)
+            
+            
         else:
             return Response(dsf_serializers.errors,status=status.HTTP_400_BAD_REQUEST)
