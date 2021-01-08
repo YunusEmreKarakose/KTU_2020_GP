@@ -2,6 +2,7 @@ import React from 'react';
 import Form1 from './form1'
 import Form2 from './form2'
 import Form3 from './form3'
+import Form4 from './form4'
 class FSChild extends React.Component{
     render(){
         if(this.props.form1){
@@ -23,6 +24,13 @@ class FSChild extends React.Component{
                 <div >
                     <h1>Find Target Face</h1>
                     <Form3 />
+                </div>
+            )
+        }else if(this.props.form4){
+            return(
+                <div >
+                    <h1>My Face Detection</h1>
+                    <Form4 />
                 </div>
             )
         }else{

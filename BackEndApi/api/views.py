@@ -17,6 +17,10 @@ from .serializers import DetectSpecificFacesSerializer
 #detect specific faces and corrupt
 from .models import DetectSFaceAndCorruptModel
 from .serializers import DetectSFaceAndCorruptSerializer
+#myfacedetection
+from .models import MyFaceDetection
+from .serializers import MyFaceDetectionSerializer
+
 # Create your views here.
 class DetectFacesViewSet(APIView):
     queryset=DetectFacesModel.objects.all()
@@ -84,3 +88,26 @@ class DSFACViewSet(APIView):
             
         else:
             return Response(dsf_serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+#myFaceDetection
+class MFDViewSet(APIView):
+    queryset=MyFaceDetection.objects.all()
+    parser_classes=(MultiPartParser,FormParser)
+    #post
+    def post(self,request,*args,**kwargs):
+        mfd_serializer=MyFaceDetectionSerializer(data=request.data)
+        if mfd_serializer.is_valid():
+            mfd_serializer.save()
+            #get face location
+            faceLocations=ImageProccess.myFaceDetection('./'+mfd_serializer.data['image'])
+            #draw
+            proccesedImgPath=ImageProccess.drawRectangels('./'+mfd_serializer.data['image'],faceLocations)
+            #return proccesed img as response
+            pImg=open(proccesedImgPath,'rb')            
+            #file response for react
+            b64str=base64.b64encode(pImg.read())
+            return HttpResponse(b64str)        
+        else:
+            return Response(mfd_serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            

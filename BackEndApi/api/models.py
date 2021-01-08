@@ -22,3 +22,8 @@ class DetectSFaceAndCorruptModel(models.Model):
     targetImage=models.ImageField(upload_to='images',null=True,blank=True)
     def __str__(self):
         return self.targetName
+#myfaceDetection
+class MyFaceDetection(models.Model):
+    image=models.ImageField(upload_to='images',null=True,blank=True)
+    def __str__(self):
+        return self.image
