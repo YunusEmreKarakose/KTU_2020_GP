@@ -1,77 +1,75 @@
 #face recog and image proccess
-import face_recognition
+import dlib
+import math
 from PIL import Image,ImageDraw
 import random
-
+#dlib
+predictor_path = "./dlibdat/shape_predictor_5_face_landmarks.dat"
+face_rec_model_path = "./dlibdat/dlib_face_recognition_resnet_model_v1.dat"
+# Load all the models we need: a detector to find the faces, a shape predictor
+# to find face landmarks so we can precisely localize the face, and finally the
+# face recognition model.
+detector = dlib.get_frontal_face_detector()
+sp = dlib.shape_predictor(predictor_path)
+facerec = dlib.face_recognition_model_v1(face_rec_model_path)
 class ImageProccess():
     def __init__(self):
         self.image=image
-    
+    #dlib detect faces
     def detectFaces(imagePath):
+        img = dlib.load_rgb_image(imagePath)
+        #face arr
+        faces=[]
+        dets = detector(img, 1)
+        return dets
+    #dlib face recognition
+    def faceRecog(imagePath,targetImage):
+        #calculate targetImage descriptor
+        targetImg=dlib.load_rgb_image(targetImage)
+        targetDet=detector(targetImg, 1)
+        targetShape=sp(targetImg, targetDet[0])
+        targetFaceDescriptor=facerec.compute_face_descriptor(targetImg, targetShape,1)
+        #find faces in image
+        img = dlib.load_rgb_image(imagePath)
+        dets = detector(img, 1)
+       
+        matches=[]
+        for k, d in enumerate(dets):
+            #print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
+            #    k, d.left(), d.top(), d.right(), d.bottom()))
+            # Get the landmarks/parts for the face in box d.
+            shape = sp(img, d)
+            #calculate face descriptor
+            faceDescriptor = facerec.compute_face_descriptor(img, shape,1)
+            #if euclidean distance between descriptors lower than .6
+            #they re same person
+            if ImageProccess.distance(targetFaceDescriptor,faceDescriptor)<0.6:
+                matches.append(d)
+        #return matches
+        return matches
+    #euclidean distance for faceRecog     
+    def distance(targetDesc,faceDesc):
+        d=0
+        for i in range(128):
+            d+= (targetDesc[i]-faceDesc[i])**2
+        return math.sqrt(d)
+    #draw rectangels for dlib
+    def drawRectangelsDlib(imagePath,faces,color=(255,0,0)):   
+        #imagename splittedPath[4]
+        splittedPath=imagePath.split("/")
+        imageRGB=Image.open(imagePath)
+        draw=ImageDraw.Draw(imageRGB)
+        for i, d in enumerate(faces):
+            draw.rectangle(((d.left(),d.top()),(d.right(),d.bottom())),outline=color)
+        del draw
+        imageRGB.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
+        return './uploadedImages/proccesed/proccesed'+splittedPath[4]
+    #corrupt image with factor
+    def corrupt(imagePath,coordinates,factor):   
         #imagename splittedPath[4]
         splittedPath=imagePath.split("/")
         #image
-        image=face_recognition.load_image_file(imagePath)
-        #find faces in image
-        faceLocations=face_recognition.face_locations(image)    
-        #convert to PIL format
-        pilImage=Image.fromarray(image)
-        #draw
-        draw=ImageDraw.Draw(pilImage)#loop through faces in image
-        for top,right,bottom,left in faceLocations:        
-            name="Unknown"        
-            #draw box
-            draw.rectangle(((left,top),(right,bottom)),outline=(0,0,0))
-            #draw label
-            textWdith,textHeight=draw.textsize(name)
-            draw.rectangle(((left,bottom-textHeight-10),(right,bottom)),fill=(0,0,0),outline=(0,0,0))
-            draw.text((left+6,bottom-textHeight-5),name,fill=(255,255,255,255))
-        #delete draw instance
-        del draw
-        #display
-        pilImage.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
-        #return proccesed and saved image path in server
-        return './uploadedImages/proccesed/proccesed'+splittedPath[4]
-    #detectSpecificFace
-    def detectSpecificFace(imagePath,targetIFPath,targetName):
-        #imagename splittedPath[4]
-        splittedPath=imagePath.split("/")
-        #target image
-        targetImage=face_recognition.load_image_file(targetIFPath)
-        targetFaceEncode=face_recognition.face_encodings(targetImage)[0]
-        knownFaceEncodings=[
-            targetFaceEncode
-        ]
-        #picture with face inside
-        image=face_recognition.load_image_file(imagePath)
-        #find faces in image
-        faceLocations=face_recognition.face_locations(image)
-        faceEncodings=face_recognition.face_encodings(image,faceLocations)
-        #convert to PIL format
-        pilImage=Image.fromarray(image)
-        #draw
-        draw=ImageDraw.Draw(pilImage)
-        #loop through faces in image
-        for (top,right,bottom,left),faceEncoding in zip(faceLocations,faceEncodings):
-            matches=face_recognition.compare_faces(knownFaceEncodings,faceEncoding)
-            
-            #if match
-            if True in matches:
-                firstMatchIndex=matches.index(True)
-                name=targetName            
-                #draw box
-                draw.rectangle(((left,top),(right,bottom)),outline=(0,0,0))
-                #draw label
-                textWdith,textHeight=draw.textsize(name)
-                draw.rectangle(((left,bottom-textHeight-10),(right,bottom)),fill=(0,0,0),outline=(0,0,0))
-                draw.text((left+6,bottom-textHeight-5),name,fill=(255,255,255,255))
-        del draw        
-        pilImage.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
-        #return proccesed and saved image path in server
-        return './uploadedImages/proccesed/proccesed'+splittedPath[4]
-    
-    #corrupt image with factor
-    def corrupt(image,coordinates,factor):
+        image=Image.open(imagePath)
         #crop image with top-left and right-bottom coordinates
         pieces=[]
         xDimension=coordinates['bottomRightX']-coordinates['topLeftX']
@@ -101,42 +99,8 @@ class ImageProccess():
                     r=random.randint(0,len(pieces)-1)
                 #print("piece "+str(r)+" paste to "+str(ctopleftx)+"  "+str(ctoplefty)+"  "+str(cbotrightx)+"  "+str(cbotrighty))            
                 image.paste(pieces[r],(ctopleftx,ctoplefty))
-        return image
-    #detect face and corrupt
-    def detectSFaceAndCorrupt(imagePath,targetIFPath,factor=16):
-        #imagename splittedPath[4]
-        splittedPath=imagePath.split("/")        
-        #target image
-        targetImage=face_recognition.load_image_file(targetIFPath)
-        targetFaceEncode=face_recognition.face_encodings(targetImage)[0]
-        knownFaceEncodings=[
-            targetFaceEncode
-        ]
-        #picture with face inside
-        image=face_recognition.load_image_file(imagePath)
-        #find faces in picture
-        faceLocations=face_recognition.face_locations(image)
-        faceEncodings=face_recognition.face_encodings(image,faceLocations)
-
-        #convert to PIL format
-        pilImage=Image.fromarray(image)
-
-        #loop through faces in image
-        for (top,right,bottom,left),faceEncoding in zip(faceLocations,faceEncodings):
-            matches=face_recognition.compare_faces(knownFaceEncodings,faceEncoding)
-            
-            #if match
-            if True in matches:
-                #call corrupt
-                coordinates={
-                    'topLeftX':left,
-                    'topLeftY':top,
-                    'bottomRightX':right,
-                    'bottomRightY':bottom
-                }
-                pilImage=ImageProccess.corrupt(pilImage,coordinates,factor)
-        pilImage.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
-        #return proccesed and saved image path in server
+        #save image then return path
+        image.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
         return './uploadedImages/proccesed/proccesed'+splittedPath[4]
 
     #myFaceDetection
@@ -379,7 +343,7 @@ class ImageProccess():
         return faces           
 
     #draw for myFaceDetection
-    def drawRectangels(imagePath,faces):        
+    def drawRectangels(imagePath,faces,color=(255,0,0)):        
         #imagename splittedPath[4]
         splittedPath=imagePath.split("/")
         #draw rectangles   
@@ -387,7 +351,7 @@ class ImageProccess():
         draw=ImageDraw.Draw(imageRGB)
         for i in range(len(faces)):
             faceTmp=faces[i]
-            draw.rectangle(((faceTmp["left"],faceTmp["upper"]),(faceTmp["right"],faceTmp["lower"])),outline=(255,0,0))
+            draw.rectangle(((faceTmp["left"],faceTmp["upper"]),(faceTmp["right"],faceTmp["lower"])),outline=color)
         del draw
         imageRGB.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
         return './uploadedImages/proccesed/proccesed'+splittedPath[4]

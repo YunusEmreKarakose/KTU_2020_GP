@@ -44,7 +44,7 @@ class Form4 extends React.Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.submitHandler} class="form1">
+                <form onSubmit={this.submitHandler} class="form4">
                     <input type="file" name="image" onChange={this.handleChange}></input>
                     <button type="submit">Submit</button>
                 </form>

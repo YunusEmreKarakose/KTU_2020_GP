@@ -14,6 +14,7 @@ body{
     margin-right: auto;
 }
 
+
 /*image container*/
 .imgContainer{
     padding-top: 100px;
@@ -22,5 +23,5 @@ body{
 
 .imgContainer img{
     width:100%;
-    max-width: 600px;
+    max-width: 1000px;
 }

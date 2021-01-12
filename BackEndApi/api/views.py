@@ -30,8 +30,11 @@ class DetectFacesViewSet(APIView):
     def post(self,request,*args,**kwargs):
         df_serializers=DetectFacesSerializer(data=request.data)
         if df_serializers.is_valid():
-            df_serializers.save()            
-            proccesedImgPath=ImageProccess.detectFaces('./'+df_serializers.data['image'])
+            df_serializers.save()
+            #find faces            
+            faces=ImageProccess.detectFaces('./'+df_serializers.data['image'])
+            #draw rectangels
+            proccesedImgPath=ImageProccess.drawRectangelsDlib('./'+df_serializers.data['image'],faces)
             #return proccesed img as response
             pImg=open(proccesedImgPath,'rb')            
             #file response for react
@@ -54,7 +57,10 @@ class DSFViewSet(APIView):
             imagePath='./'+dsf_serializers.data['image']
             targetIFPath='./'+dsf_serializers.data['targetImage']
             targetName=dsf_serializers.data['targetName']
-            proccesedImgPath=ImageProccess.detectSpecificFace(imagePath,targetIFPath,targetName)
+            #find matches
+            matches=ImageProccess.faceRecog(imagePath,targetIFPath)
+            #draw rectangle
+            proccesedImgPath=ImageProccess.drawRectangelsDlib(imagePath,matches)
             #return proccesed img as response
             pImg=open(proccesedImgPath,'rb')
             #file response for react
@@ -76,16 +82,19 @@ class DSFACViewSet(APIView):
             imagePath='./'+dsf_serializers.data['image']
             targetIFPath='./'+dsf_serializers.data['targetImage']
             corruptFactor=dsf_serializers.data['corruptFactor']
-            proccesedImgPath=ImageProccess.detectSFaceAndCorrupt(imagePath,targetIFPath,corruptFactor)
+            #find matches
+            matches=ImageProccess.faceRecog(imagePath,targetIFPath)
+            #matche coordinate
+            coordinates={'topLeftY':matches[0].top(),'bottomRightY':matches[0].bottom(),'topLeftX':matches[0].left(),'bottomRightX':matches[0].right()}
+            #corrupt
+            proccesedImgPath=ImageProccess.corrupt(imagePath,coordinates,corruptFactor)
             #return proccesed img as response
             pImg=open(proccesedImgPath,'rb')
             #file response for react
             b64str=base64.b64encode(pImg.read())
             return HttpResponse(b64str)
             #for postman
-            #return FileResponse(pImg)
-            
-            
+            #return FileResponse(pImg)     
         else:
             return Response(dsf_serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     
