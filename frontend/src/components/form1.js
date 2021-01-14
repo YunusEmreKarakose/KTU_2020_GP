@@ -33,12 +33,14 @@ class Form1 extends React.Component {
         fd.append('targetImage',this.state.targetImage)
         fd.append('corruptFactor',this.state.corruptFactor)
         const url='http://localhost:8000/detectSFaceAndCorrupt/'
+        this.setState({
+            isLoad:true
+        })
         axios.post(url,fd)
             .then((response)=>{
                 //console.log(response)
                 this.setState({
-                    proccesed:response.data,
-                    isLoad:true
+                    proccesed:response.data
                 })
             }).catch(err=>{
                 console.log(err)
@@ -49,8 +51,8 @@ class Form1 extends React.Component {
         return (
             <div>
                 <form onSubmit={this.submitHandler} class="form1">
-                    <input type="file" name="image" onChange={this.handleChange}></input>
-                    <input type="file" name="targetImage" onChange={this.handleChange}></input>                    
+                    <input type="file" name="image" class="fileinput" onChange={this.handleChange}></input>
+                    <input type="file" name="targetImage" class="fileinput" onChange={this.handleChange}></input>                    
                     <input type="text" name="corruptFactor" onChange={this.handleChange}></input>
                     <button type="submit">Submit</button>
                 </form>

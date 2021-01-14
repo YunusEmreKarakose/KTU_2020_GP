@@ -60,7 +60,7 @@ class ImageProccess():
         imageRGB=Image.open(imagePath)
         draw=ImageDraw.Draw(imageRGB)
         for i, d in enumerate(faces):
-            draw.rectangle(((d.left(),d.top()),(d.right(),d.bottom())),outline=color)
+            draw.rectangle(((d.left(),d.top()),(d.right(),d.bottom())),outline=color,width=4)
         del draw
         imageRGB.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
         return './uploadedImages/proccesed/proccesed'+splittedPath[4]
@@ -351,7 +351,7 @@ class ImageProccess():
         draw=ImageDraw.Draw(imageRGB)
         for i in range(len(faces)):
             faceTmp=faces[i]
-            draw.rectangle(((faceTmp["left"],faceTmp["upper"]),(faceTmp["right"],faceTmp["lower"])),outline=color)
+            draw.rectangle(((faceTmp["left"],faceTmp["upper"]),(faceTmp["right"],faceTmp["lower"])),outline=color,width=4)
         del draw
         imageRGB.save('./uploadedImages/proccesed/proccesed'+splittedPath[4])
         return './uploadedImages/proccesed/proccesed'+splittedPath[4]

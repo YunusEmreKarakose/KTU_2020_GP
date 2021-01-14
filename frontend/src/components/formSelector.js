@@ -8,6 +8,7 @@ class FormSelector extends React.Component{
             form1:false,
             form2:false,
             form3:false,
+            form4:false,
         }
         this.onClickHandler=this.onClickHandler.bind(this)
     }
@@ -34,12 +35,12 @@ class FormSelector extends React.Component{
     
     render() {
         return (
-            <div>
+            <div class="formSelector">
                 <div>
-                    <button type="submit" name="form1" onClick={this.onClickHandler}>Form1</button>
-                    <button type="submit" name="form2" onClick={this.onClickHandler}>Form2</button>
-                    <button type="submit" name="form3" onClick={this.onClickHandler}>Form3</button>
-                    <button type="submit" name="form4" onClick={this.onClickHandler}>Form4</button>
+                    <button type="submit" name="form1" class="formButton blue" onClick={this.onClickHandler}>Form1</button>
+                    <button type="submit" name="form2" class="formButton blue" onClick={this.onClickHandler}>Form2</button>
+                    <button type="submit" name="form3" class="formButton blue" onClick={this.onClickHandler}>Form3</button>
+                    <button type="submit" name="form4" class="formButton blue" onClick={this.onClickHandler}>Form4</button>
                 </div>
                 <FSChild 
                     form1={this.state.form1}

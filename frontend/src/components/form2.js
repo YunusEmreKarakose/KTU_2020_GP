@@ -28,14 +28,16 @@ class Form2 extends React.Component {
         e.preventDefault();
         const fd=new FormData();
         fd.append('image',this.state.image)
-        fd.append('title',this.state.title)
-        const url='http://localhost:8000/detectFaces/'
+        fd.append('title',"title")
+        const url='http://localhost:8000/detectFaces/'        
+        this.setState({
+            isLoad:true
+        })
         axios.post(url,fd)
             .then((response)=>{
                 //console.log(response)
                 this.setState({
-                    proccesed:response.data,
-                    isLoad:true
+                    proccesed:response.data
                 })
             }).catch(err=>{
                 console.log(err)
@@ -46,8 +48,7 @@ class Form2 extends React.Component {
         return (
             <div>
                 <form onSubmit={this.submitHandler} class="form1">
-                    <input type="file" name="image" onChange={this.handleChange}></input>                   
-                    <input type="text" name="title" onChange={this.handleChange}></input>
+                    <input type="file" name="image" class="fileinput" onChange={this.handleChange}></input>
                     <button type="submit">Submit</button>
                 </form>
                 <div>
