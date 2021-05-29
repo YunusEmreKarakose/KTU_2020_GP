@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import DetectFacesModel,DetectSpecificFacesModel,DetectSFaceAndCorruptModel,MyFaceDetection
+from .models import WebCamFD,DetectFacesModel,DetectSpecificFacesModel,DetectSFaceAndCorruptModel,MyFaceDetection
 
 class DetectFacesSerializer(serializers.ModelSerializer):
     class Meta():
@@ -18,3 +18,8 @@ class MyFaceDetectionSerializer(serializers.ModelSerializer):
     class Meta():
         model=MyFaceDetection
         fields=['image']
+
+class WebCamFDSerializer(serializers.ModelSerializer):
+    class Meta():
+        model=WebCamFD
+        fields=['b64image']

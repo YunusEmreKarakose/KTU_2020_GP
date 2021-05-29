@@ -1,4 +1,5 @@
 #django rest framework imports
+from django.http.response import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser,FormParser
 from rest_framework.response import Response
@@ -7,6 +8,7 @@ from django.http import HttpResponse,FileResponse
 import base64
 #face recog and image proccess
 from api.imageprocces import ImageProccess
+from api.myclass import MyClass
 #models
 #detect faces
 from .models import DetectFacesModel
@@ -20,6 +22,9 @@ from .serializers import DetectSFaceAndCorruptSerializer
 #myfacedetection
 from .models import MyFaceDetection
 from .serializers import MyFaceDetectionSerializer
+#webcam facedetectino
+from .models import WebCamFD
+from .serializers import WebCamFDSerializer
 
 # Create your views here.
 class DetectFacesViewSet(APIView):
@@ -119,4 +124,21 @@ class MFDViewSet(APIView):
             return HttpResponse(b64str)        
         else:
             return Response(mfd_serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-            
+
+
+#webcam
+class WebCamFDViewSet(APIView):
+    queryset=WebCamFD.objects.all()
+    parser_classes=(MultiPartParser,FormParser)
+    #post
+    def post(self,request,*args,**kwargs):
+        wfd_serializer=WebCamFDSerializer(data=request.data)
+        if wfd_serializer.is_valid():
+            wfd_serializer.save()
+            #get face location
+            xxx=MyClass.detectFaces(wfd_serializer.data['b64image'])
+            print(xxx)
+            #return HttpResponse("b64str")
+            return JsonResponse(xxx,safe=False)      
+        else:
+            return Response(wfd_serializer.errors,status=status.HTTP_400_BAD_REQUEST)

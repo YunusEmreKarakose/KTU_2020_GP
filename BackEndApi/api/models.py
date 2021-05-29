@@ -27,3 +27,9 @@ class MyFaceDetection(models.Model):
     image=models.ImageField(upload_to='images',null=True,blank=True)
     def __str__(self):
         return self.image
+
+#facedetect for webcam
+class WebCamFD(models.Model):
+    b64image=models.TextField()
+    def __str__(self):
+        return self.b64image
