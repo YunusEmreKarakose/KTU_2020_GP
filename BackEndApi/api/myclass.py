@@ -38,9 +38,12 @@ class MyClass():
         imageHSV=imageRGB.convert('HSV')
         hsvPixels=np.array(imageHSV)
         #is skin?
-        boolArr=MyClass.isSkin(rgbPixels,ycbcrPixels,hsvPixels,imageRGB.width,imageRGB.height)    
+        boolArr=MyClass.isSkin(rgbPixels,ycbcrPixels,hsvPixels,imageRGB.width,imageRGB.height)
+        #newImg=Image.fromarray(boolArr)
+        #newImg.show()
         #blobs
         blobs=MyClass.findblobs(boolArr)
+        print()
         #find biggest blob
         bigBlob=MyClass.getBiggest(blobs)
         return bigBlob
@@ -56,7 +59,7 @@ class MyClass():
         #1st pass
         for r in range(height-limit):
             for c in range(width-limit):
-                dim=100
+                dim=50
                 #if pixel is skin    
                 if arr[r,c] and used[r,c]:
                     count=MyClass.countNeighbors(arr[r:r+dim,c:c+dim])

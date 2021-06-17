@@ -53,6 +53,7 @@ function WebCamComp() {
         ctx.rect(0, Ar+360, 1280, 360);
         ctx.stroke(); 
         //send req 
+        const requestTimer=1000;
         setInterval(() => {
             if(
                 typeof webcamRef.current !== "undefined" &&
@@ -71,54 +72,114 @@ function WebCamComp() {
                 
                 axios.post(url,fd)
                 .then((response)=>{
-                    // Set canvas height and width
-                    canvasRef.current.width = 640;
-                    canvasRef.current.height = 360;
-                    const ctx = canvasRef.current.getContext("2d");
-                    // Draw blob rectangle
-                    ctx.beginPath();   
-                    var boxWidth=response.data.right-response.data.left;
-                    var boxHeight=response.data.lower-response.data.upper;
-                    ctx.lineWidth = "6";                    
-                    ctx.strokeStyle = "red";
-                    ctx.rect(response.data.left,response.data.upper, boxWidth,boxHeight ); 
-                    ctx.stroke();
+                    
                     //update frame boxes
                     if(typeof response.data.left!=="undefined" && typeof response.data.upper!=="undefined"){
-                        Ac=response.data.left
-                        Ar=response.data.upper
+                        //Ac=response.data.left
+                        //Ar=response.data.upper
+                        // Ac+=(response.data.left-Ac)/step
+                        // Ar+=(response.data.upper-Ar)/step
+                        
+                        console.log("start::"+Ac+" ",Ar);	
+                        console.log("to::"+response.data.left+" ",response.data.upper);	
+                        var i=0;
+
+                        const tmpAr=Ar;
+                        const tmpAc=Ac;
+                        const processTimer=100;
+                        const step=(requestTimer/2)/processTimer;
+                        var process=setInterval(()=>{
+                            //ar ve ac değerlerini sakla
+                            Ac+=(response.data.left-tmpAc)/step;
+                            Ar+=(response.data.upper-tmpAr)/step;
+                            Ac=parseInt(Ac);
+                            Ar=parseInt(Ar);
+                            // Set canvas height and width
+                            canvasRef.current.width = 640;
+                            canvasRef.current.height = 360;
+                            const ctx = canvasRef.current.getContext("2d");
+                            // Draw blob rectangle
+                            ctx.beginPath();   
+                            var boxWidth=response.data.right-response.data.left;
+                            var boxHeight=response.data.lower-response.data.upper;
+                            ctx.lineWidth = "6";                    
+                            ctx.strokeStyle = "red";
+                            ctx.rect(response.data.left,response.data.upper, boxWidth,boxHeight ); 
+                            ctx.stroke();
+                            //b1                  252c37    
+                            ctx.beginPath();
+                            ctx.strokeStyle = "blue";
+                            ctx.lineWidth = "4";
+                            ctx.rect(0, 0, 640, Ar/2);
+                            ctx.stroke();
+                            //b2                   
+                            ctx.beginPath();
+                            ctx.strokeStyle = "yellow";
+                            ctx.lineWidth = "4";
+                            ctx.rect(0, Ar/2, Ac/2, 180);
+                            ctx.stroke();
+                            //b3   
+                            ctx.beginPath();
+                            ctx.strokeStyle = "green";
+                            ctx.lineWidth = "4";
+                            ctx.rect((Ac+640)/2, Ar/2, 320-Ac/2, 180);
+                            ctx.stroke();        
+                            //b4
+                            ctx.beginPath();
+                            ctx.strokeStyle = "purple";
+                            ctx.lineWidth = "4";
+                            ctx.rect(0, (Ar+360)/2, 720, 180);
+                            ctx.stroke();
+                            console.log("step::"+i+"  Values::"+Ac+" ",Ar);
+                            i++;	
+                            if(i>=step){  
+                               clearInterval(process);
+                            }
+                         },processTimer);
+                    }else{             
+                        // Set canvas height and width
+                        canvasRef.current.width = 640;
+                        canvasRef.current.height = 360;
+                        const ctx = canvasRef.current.getContext("2d");
+                        // Draw blob rectangle
+                        ctx.beginPath();   
+                        var boxWidth=response.data.right-response.data.left;
+                        var boxHeight=response.data.lower-response.data.upper;
+                        ctx.lineWidth = "6";                    
+                        ctx.strokeStyle = "red";
+                        ctx.rect(response.data.left,response.data.upper, boxWidth,boxHeight ); 
+                        ctx.stroke();           
+                        //b1                  252c37    
+                        ctx.beginPath();
+                        ctx.strokeStyle = "blue";
+                        ctx.lineWidth = "4";
+                        ctx.rect(0, 0, 640, Ar/2);
+                        ctx.stroke();
+                        //b2                   
+                        ctx.beginPath();
+                        ctx.strokeStyle = "yellow";
+                        ctx.lineWidth = "4";
+                        ctx.rect(0, Ar/2, Ac/2, 180);
+                        ctx.stroke();
+                        //b3   
+                        ctx.beginPath();
+                        ctx.strokeStyle = "green";
+                        ctx.lineWidth = "4";
+                        ctx.rect((Ac+640)/2, Ar/2, 320-Ac/2, 180);
+                        ctx.stroke();        
+                        //b4
+                        ctx.beginPath();
+                        ctx.strokeStyle = "purple";
+                        ctx.lineWidth = "4";
+                        ctx.rect(0, (Ar+360)/2, 720, 180);
+                        ctx.stroke();
                     }
-                    console.log(response.data.left+"  "+response.data.upper)
-                    //b1                  252c37    
-                    ctx.beginPath();
-                    ctx.strokeStyle = "blue";
-                    ctx.lineWidth = "4";
-                    ctx.rect(0, 0, 640, Ar/2);
-                    ctx.stroke();
-                    //b2                   
-                    ctx.beginPath();
-                    ctx.strokeStyle = "yellow";
-                    ctx.lineWidth = "4";
-                    ctx.rect(0, Ar/2, Ac/2, 180);
-                    ctx.stroke();
-                    //b3   
-                    ctx.beginPath();
-                    ctx.strokeStyle = "green";
-                    ctx.lineWidth = "4";
-                    ctx.rect((Ac+640)/2, Ar/2, 320-Ac/2, 180);
-                    ctx.stroke();        
-                    //b4
-                    ctx.beginPath();
-                    ctx.strokeStyle = "purple";
-                    ctx.lineWidth = "4";
-                    ctx.rect(0, (Ar+360)/2, 720, 180);
-                    ctx.stroke(); 
     
                 }).catch(err=>{
                     console.log(err)
                 })
               }
-          }, 500);
+          }, requestTimer);
     }
     useEffect(()=>{sendReq()},[]);
     return (
