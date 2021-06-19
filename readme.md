@@ -1,4 +1,4 @@
-#BITIRME
+# BITIRME
 Fonksiyonlar[myclass.py](https://github.com/YunusEmreKarakose/KTU_2020_GP/blob/main/BackEndApi/api/myclass.py)
 
 POST(line 130) [views.py](https://github.com/YunusEmreKarakose/KTU_2020_GP/blob/main/BackEndApi/api/views.py)
